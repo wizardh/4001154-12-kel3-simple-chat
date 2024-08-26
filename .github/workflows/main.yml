@@ -48,4 +48,4 @@ jobs:
           /home/kelompok3_bej12/.nvm/versions/node/v22.6.0/bin/pm2 start server.js -n webchat
 
     - name: Notify Deployment Success
-      run: echo "Deployment to GCP VM successful!"
+      run: echo "Deployment to GCP VM successful!" 
