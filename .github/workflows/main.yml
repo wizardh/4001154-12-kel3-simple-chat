@@ -1,0 +1,52 @@
+name: Deploy Kelompok 3 Platinum Challenge Webchat
+
+on:
+  push:
+    branches:
+      - main  # Deploy when code is pushed to the 'main' branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH agent and add SSH key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.GCP_SSH_KEY }}
+
+    - name: Install Node.js and PM2
+      run: |
+        curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        sudo npm install -g pm2
+        export PATH=$PATH:/usr/local/bin
+        node -v
+        npm -v
+        pm2 -v
+
+    - name: Deploy to GCP VM
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.GCP_VM_IP }}
+        username: ${{ secrets.GCP_VM_USER }}
+        key: ${{ secrets.GCP_SSH_KEY }}
+        port: 22
+        script: |
+          export PATH=$PATH:/usr/local/bin:/usr/bin
+          # Load NVM
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"          
+          mkdir -p /home/kelompok3_bej12/webchat
+          cd /home/kelompok3_bej12/webchat
+          git pull origin main
+          /home/kelompok3_bej12/.nvm/versions/node/v22.6.0/bin/npm install
+          /home/kelompok3_bej12/.nvm/versions/node/v22.6.0/bin/pm2 stop server.js -n webchat
+          /home/kelompok3_bej12/.nvm/versions/node/v22.6.0/bin/pm2 start server.js -n webchat
+
+    - name: Notify Deployment Success
+      run: echo "Deployment to GCP VM successful!"
