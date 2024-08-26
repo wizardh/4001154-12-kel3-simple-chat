@@ -28,7 +28,7 @@ jobs:
         npm -v
         pm2 -v
 
-    - name: Deploy to GCP VM
+    - name: Deploy to GCP VM 
       uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.GCP_VM_IP }}
@@ -41,7 +41,6 @@ jobs:
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
           [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"          
-          mkdir -p /home/kelompok3_bej12/webchat
           cd /home/kelompok3_bej12/webchat
           git pull origin main
           /home/kelompok3_bej12/.nvm/versions/node/v22.6.0/bin/npm install
@@ -49,4 +48,4 @@ jobs:
           /home/kelompok3_bej12/.nvm/versions/node/v22.6.0/bin/pm2 start server.js -n webchat
 
     - name: Notify Deployment Success
-      run: echo "Deployment to GCP VM successful!"
+      run: echo "Deployment to GCP VM successful!" 
